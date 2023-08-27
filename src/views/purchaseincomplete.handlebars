@@ -1,0 +1,36 @@
+<div>Compra finalizada con exito!! </div>
+
+<div>
+  <table>
+    <thead>
+      <tr>
+        <th>Monto total de la orden:</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each getTicketDetails}}
+        <tr>
+          <td>{{this.amount}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <table>
+    <thead>
+      <tr>
+        <th>Orden N:</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each getTicketDetails}}
+        <tr>
+          <td>{{this.code}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <div>Los siguientes productos no tenian stock</div>
+  <form method="GET" action="/api/cart/carts/{{cart}}">
+    <button type="submit">Ver carrito</button>
+  </form>
+</div>

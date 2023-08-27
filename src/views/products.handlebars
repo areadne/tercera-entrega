@@ -1,0 +1,58 @@
+<div>
+
+  <div> Bienvenid@ {{users.user}}, Rol: {{users.role}}
+    <form method="POST" action="/api/sessions/logout">
+      <button type="submit">Logout</button>
+    </form>
+    <form method="GET" action="/api/cart/carts/{{users.cart}}">
+      <button type="submit">Ver carrito</button>
+    </form>
+
+  </div>
+    <hr>
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Descripcion</th>
+        <th>Precio</th>
+        <th>Link</th>
+        <th>Codigo</th>
+        <th>Stock</th>
+        <th>Categoria</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each payload.docs}}
+        {{#with this}}
+        <tr>
+          <td>{{this.title}}</td>
+          <td>{{this.description}}</td>
+          <td>{{this.price}}</td>
+          <td>{{this.thumbnail}}</td>
+          <td>{{this.code}}</td>
+          <td>{{this.stock}}</td>
+          <td>{{this.category}}</td>
+          <td>{{this.status}}</td>
+          <td>
+            <form method="POST" action="/api/cart/{{../users.cart}}/products/{{this.internal_id}}">
+              <input type="hidden" name="productId" value="{{this.internal_id}}" />
+              <button type="submit">Agregar</button>
+            </form>
+          </td>
+        </tr>
+        {{/with}}
+      {{/each}}
+    </tbody>
+  </table>
+
+  <div>
+    {{#if hasPrevPage}}
+      <a href="{{prevLink}}">Anterior</a>
+    {{/if}}
+    {{#if hasNextPage}}
+      <a href="{{nextLink}}">Siguiente</a>
+    {{/if}}
+  </div>
+</div>

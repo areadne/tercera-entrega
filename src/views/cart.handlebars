@@ -1,0 +1,36 @@
+<div>
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio unitario</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each newArray}}
+        <tr>
+          <td>{{this.title}}</td>
+          <td>{{this.quantity}}</td>
+          <td>{{this.price}}</td>
+          <td>{{this.amount}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <hr />
+  <div>Total en carrito</div>
+  {{newArray.amount}}
+  <hr />
+  <div>
+    <form
+      method="POST"
+      action="http://localhost:8080/api/cart/{{newArray.cart}}"
+    >
+      <button type="submit">Vaciar carrito</button>
+    </form>
+    <form method="GET" action="/api/cart/{{newArray.cart}}/purchase">
+      <button type="submit">Finalizar compra</button>
+    </form>
+  </div>
+</div>
