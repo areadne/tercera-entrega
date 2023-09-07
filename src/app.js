@@ -14,6 +14,9 @@ import { Server } from "socket.io";
 import { ProductServiceManager } from "./services/product.service.js";
 import viewsRouter from "./routers/chat.router.js";
 import messageModel from "./models/messages.model.js";
+import mockingRouter from "./routers/mockingproducts.router.js"
+import errorMiddleware from "./middlewares/error.middleware.js";
+import userRouter from "./routers/user.router.js"
 
 const serviceManager = new ProductServiceManager();
 
@@ -54,6 +57,10 @@ app.use("/api/cart", cartRouter);
 app.use("/api/sessions", sessionsRouter);
 app.use("/home", homeRouter);
 app.use("/chat", viewsRouter);
+app.use("/mockingproducts", mockingRouter)
+
+app.use('/users', userRouter)
+app.use(errorMiddleware)
 
 await mongoose.connect(config.mongo.url_db_name);
 
@@ -62,8 +69,7 @@ const httpServer = app.listen(config.apiserver.port, () => {
 });
 
 const io = new Server(httpServer);
-//}}}
-// const messages = [];
+
 
 io.on("connection", (socket) => {
   console.log("handshake");
@@ -86,13 +92,6 @@ io.on("connection", (socket) => {
     serviceManager.deleteProductFromSocket(idToDelete);
   });
 
-  //chat del profe
-  // socket.broadcast.emit('alerta')
-  // socket.emit('logs', messages)
-  // socket.on('message', data => {
-  //     messages.push(data)
-  //     io.emit('logs', messages)
-  // })
   socket.on("message", async (data) => {
     console.log(data);
     messageModel.create({ user: "Persona", message: data });
@@ -109,14 +108,3 @@ io.on("connection", (socket) => {
     }
   });
 });
-
-// const messages = []
-
-// io.on('connection', socket => {
-//     socket.broadcast.emit('alerta')
-//     socket.emit('logs', messages)
-//     socket.on('message', data => {
-//         messages.push(data)
-//         io.emit('logs', messages)
-//     })
-// })

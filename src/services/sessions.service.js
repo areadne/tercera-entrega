@@ -50,7 +50,7 @@ export class sessionsServiceManager {
 
   sentUserData = async (request, response) => {
     const userName = request.session.user.first_name;
-
+    
     let searchUser = await SessionService.getAll({first_name: userName});
     let userRole = "";
     let cartId = ""

@@ -1,5 +1,8 @@
 import ProductDAO from "../dao/product.mongo.dao.js";
 import productRepository from "../repositories/product.repository.js";
+import CustomError from "../services/errors/custom_error.js";
+import EErrors from "../services/errors/enums.js";
+import { generateUserErrorInfo } from "../services/errors/info.js";
 
 export const ProductService = new productRepository(new ProductDAO());
 
@@ -64,56 +67,72 @@ export class ProductServiceManager {
     return resultToSend;
   };
 
-  addProduct = async (request, response) => {
-    const {
-      title,
-      description,
-      price,
-      thumbnail,
-      code,
-      stock,
-      category,
-      status,
-    } = request.body;
+  addProduct = async (request, response, next) => {
+    try {
+      const {
+        title,
+        description,
+        price,
+        thumbnail,
+        code,
+        stock,
+        category,
+        status,
+      } = request.body;
 
-    if (typeof status != "boolean") {
-      response.status(400).send("status must be boolean");
-      return;
+      const data = request.body;
+
+      if (typeof status != "boolean") {
+        CustomError.createError({
+          name: "Creation error",
+          cause: "Status must be a boolean",
+          message: "Error creating the product",
+          code: EErrors.INVALID_TYPES_ERROR,
+        });
+      }
+
+      if (!title || !description || !price || !stock || !code || !category) {
+        CustomError.createError({
+          name: "Creation error",
+          cause: generateUserErrorInfo(data),
+          message: "Error creating the product",
+          code: EErrors.INVALID_TYPES_ERROR,
+        });
+      }
+
+      let readFile = await this.readProductsDB();
+
+      const validateCode = readFile.find((el) => el.code === code);
+
+      if (validateCode) {
+        response.status(400).send("Code indicated already exits");
+        return;
+      }
+
+      let internal_id;
+
+      internal_id =
+        readFile.length === 0
+          ? 1
+          : readFile[readFile.length - 1].internal_id + 1;
+      console.log(internal_id);
+
+      let newItemInDB = await ProductService.create({
+        internal_id,
+        title,
+        description,
+        price,
+        thumbnail,
+        code,
+        stock,
+        category,
+        status,
+      });
+
+      response.send({ status: "Successful request", payload: newItemInDB });
+    } catch (error) {
+      next(error);
     }
-
-    if (!title || !description || !price || !stock || !code || !category) {
-      response.status(400).send("At least one field is missing");
-      return;
-    }
-
-    let readFile = await this.readProductsDB();
-
-    const validateCode = readFile.find((el) => el.code === code);
-
-    if (validateCode) {
-      response.status(400).send("Code indicated already exits");
-      return;
-    }
-
-    let internal_id;
-
-    internal_id =
-      readFile.length === 0 ? 1 : readFile[readFile.length - 1].internal_id + 1;
-    console.log(internal_id);
-
-    let newItemInDB = await ProductService.create({
-      internal_id,
-      title,
-      description,
-      price,
-      thumbnail,
-      code,
-      stock,
-      category,
-      status,
-    });
-
-    response.send({ status: "Successful request", payload: newItemInDB });
   };
 
   addProductFromSocket = async (request, response) => {

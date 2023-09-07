@@ -10,8 +10,8 @@ export const getProductByIdController = async (request, response) => {
   await serviceManager.getProductById(id, response);
 };
 
-export const addProductController = async (request, response) => {
-  await serviceManager.addProduct(request, response);
+export const addProductController = async (request, response, next) => {
+  await serviceManager.addProduct(request, response, next);
 };
 
 export const updateProductController = async (request, response) => {
