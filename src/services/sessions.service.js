@@ -1,17 +1,15 @@
-// import { isValidPassword } from "../dao/helpers/utils.js";
-
-import SessionDAO from "../dao/sessions.mongo.dao.js"
-import sessionRepository from "../repositories/sessions.repository.js"
+import SessionDAO from "../dao/sessions.mongo.dao.js";
+import sessionRepository from "../repositories/sessions.repository.js";
 
 import ProductDAO from "../dao/product.mongo.dao.js";
 import productRepository from "../repositories/product.repository.js";
 
 import contactDTO from "../dto/contact.dto.js";
+import logger from "../helpers/logger.js";
 
-export const SessionService = new sessionRepository(new SessionDAO())
-export const ProductService = new productRepository(new ProductDAO())
-export const contactDTOManager = new contactDTO()
-
+export const SessionService = new sessionRepository(new SessionDAO());
+export const ProductService = new productRepository(new ProductDAO());
+export const contactDTOManager = new contactDTO();
 
 export class sessionsServiceManager {
   constructor() {}
@@ -21,14 +19,21 @@ export class sessionsServiceManager {
   };
 
   loginSession = async (request, response) => {
-    let user = await contactDTOManager.userInformationHandler(request, response)
+    let user = await contactDTOManager.userInformationHandler(
+      request,
+      response
+    );
 
     if (user.email === undefined) {
+      logger.error("oginSession failed because email is not correct")
+      logger.debug("oginSession failed because user.email is undefined")
       response.redirect("/api/sessions/registro");
       return;
     }
 
     if (user.password === false) {
+      logger.error("LoginSession failed because user or password is not correct")
+      logger.debug("LoginSession failed because password is not correct")
       response.status(400).json({
         message: "Usuario o contrase*a incorrecto",
       });
@@ -50,20 +55,20 @@ export class sessionsServiceManager {
 
   sentUserData = async (request, response) => {
     const userName = request.session.user.first_name;
-    
-    let searchUser = await SessionService.getAll({first_name: userName});
+
+    let searchUser = await SessionService.getAll({ first_name: userName });
     let userRole = "";
-    let cartId = ""
+    let cartId = "";
 
     for (const iterator of searchUser) {
       userRole = iterator.role;
-      cartId = iterator.cart
+      cartId = iterator.cart;
     }
 
     const usuario = { user: userName, role: userRole, cart: cartId };
 
-    return usuario
-  }
+    return usuario;
+  };
 
   loginHandler = async (request, response) => {
     const limit = Number(request.query.limit) || 10;
@@ -74,7 +79,7 @@ export class sessionsServiceManager {
     const result = await ProductService.paginate(
       {},
       { page, limit, lean: true }
-        )
+    );
 
     if (sort === 1) {
       const sortedDocsAsc = result.docs.sort((a, b) => a.price - b.price);
@@ -96,7 +101,7 @@ export class sessionsServiceManager {
       ? `/api/sessions/view/?limit=${limit}&page=${result.nextPage}&sort=${sort}&query=${query}`
       : null;
 
-      const resultToSend = {
+    const resultToSend = {
       status: "success",
       payload: { docs: result.docs },
       totalPages: result.totalPages,
@@ -109,19 +114,19 @@ export class sessionsServiceManager {
       nextLink: result.nextLink,
     };
 
-    let usuario = await this.sentUserData(request, response)
+    let usuario = await this.sentUserData(request, response);
     resultToSend.users = usuario;
 
     response.render("products", resultToSend);
   };
-  
+
   currentUser = async (request, response) => {
-    let currentUser = request.session.user
-    
-    console.log(currentUser)
-    if (currentUser === undefined){
-      currentUser = { message: "session not registered" }
+    let currentUser = request.session.user;
+
+    logger.info(currentUser);
+    if (currentUser === undefined) {
+      currentUser = { message: "session not registered" };
     }
-    response.send(currentUser)
-  }
+    response.send(currentUser);
+  };
 }

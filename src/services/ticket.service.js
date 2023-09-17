@@ -5,6 +5,7 @@ import { ProductServiceManager } from "./product.service.js";
 import ProductDAO from "../dao/product.mongo.dao.js";
 import productRepository from "../repositories/product.repository.js";
 import { sessionsServiceManager } from "./sessions.service.js";
+import logger from "../helpers/logger.js";
 
 export const ProductService = new productRepository(new ProductDAO());
 
@@ -18,7 +19,7 @@ export class ticketServiceManager {
 
   cartDetail = async (request, response) => {
     const id = Number(request.params.cid);
-    console.log(id);
+    logger.info(id);
     return await cartManager.getProductById(id);
   };
 
@@ -93,6 +94,8 @@ export class ticketServiceManager {
     let amount = await this.stockHandler(request, response);
 
     if (amount === 0) {
+      logger.debug("createTicket failed because amout is 0")
+      logger.fatal("createTicket failed because we do not have stock")
       response.send(
         "No se pudo finalizar compra ya que no contamos con stock de los productos seleccionados"
       );

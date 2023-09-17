@@ -4,4 +4,4 @@ const EErrors = {
     DATABASES_ERROR: 3
 }
 
-export default EErrors
+export default EErrors 

@@ -13,5 +13,8 @@ export default {
     },
     system: {
         admin: process.env.admin
+    },
+    ambiente: {
+        env: process.env.environment
     }
 }
