@@ -4,4 +4,5 @@ export default class sessionRepository {
   }
 
   getAll = async (data) => await this.dao.getAll(data);
+  updateOne = async (id, data) => await this.dao.updateOne(id, data);
 }

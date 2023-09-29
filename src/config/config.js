@@ -16,5 +16,9 @@ export default {
     },
     ambiente: {
         env: process.env.environment
+    },
+    mailer: {
+        mailuser: process.env.MAILUSER,
+        password: process.env.PASSUSER
     }
 }

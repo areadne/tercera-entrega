@@ -1,1 +1,8 @@
 fatal: addProduct could not be executed because status is not a boolean {"timestamp":"2023-09-17T22:30:01.318Z"}
+error: Email does not exits {"timestamp":"2023-09-24T00:34:44.993Z"}
+error: Email does not exits {"timestamp":"2023-09-24T00:35:33.831Z"}
+error: Email does not exits {"timestamp":"2023-09-24T00:36:01.589Z"}
+error: Password must be diferent to previous {"timestamp":"2023-09-24T02:28:56.781Z"}
+error: Password must be diferent to previous {"timestamp":"2023-09-24T02:54:57.303Z"}
+error: Password must be diferent to previous {"timestamp":"2023-09-24T02:57:24.140Z"}
+error: Password must be diferent to previous {"timestamp":"2023-09-24T03:03:48.917Z"}

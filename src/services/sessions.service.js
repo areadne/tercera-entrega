@@ -25,8 +25,8 @@ export class sessionsServiceManager {
     );
 
     if (user.email === undefined) {
-      logger.error("oginSession failed because email is not correct")
-      logger.debug("oginSession failed because user.email is undefined")
+      logger.error("LoginSession failed because email is not correct")
+      logger.debug("LoginSession failed because user.email is undefined")
       response.redirect("/api/sessions/registro");
       return;
     }

@@ -19,6 +19,7 @@ import errorMiddleware from "./middlewares/error.middleware.js";
 import userRouter from "./routers/user.router.js"
 import loggerTest from "./routers/loggertest.router.js"
 import logger from "./helpers/logger.js";
+import mailRouter from "./routers/mail.router.js"
 
 const serviceManager = new ProductServiceManager();
 
@@ -65,6 +66,7 @@ app.use('/users', userRouter)
 app.use(errorMiddleware)
 
 app.use("/loggerTest", loggerTest)
+app.use("/mail", mailRouter)
 
 await mongoose.connect(config.mongo.url_db_name);
 
