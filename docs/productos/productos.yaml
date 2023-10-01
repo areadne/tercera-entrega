@@ -1,0 +1,161 @@
+paths:
+  /api/products:
+    get:
+      summary: Obtener todos los productos
+      tags:
+       - Productos
+      operationId: getAllProducts
+      responses:
+        200:
+          description: OK
+    post:
+      summary: Agregar un nuevo producto
+      tags:
+       - Productos
+      operationId: addProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/addOrUpdateProduct'
+      responses:
+        200:
+          description: Producto agregado
+        400:
+          description: Usualmente por data incompleta o codigo existente
+  /api/products/{pid}:
+    parameters:
+      - name: pid
+        in: path
+        required: true
+        type: integer
+        description: ID del producto
+    get:
+      summary: Obtener un producto por ID
+      tags:
+       - Productos
+      operationId: getProductById
+      responses:
+        200:
+          description: producto encontrado
+        400: 
+          description: producto solicitado no fue encontrado en la base de datos
+    put:
+      summary: Actualizar un producto por ID
+      tags:
+       - Productos
+      operationId: updateProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/addOrUpdateProduct'
+      responses:
+        200:
+          description: Producto actualizado
+        400:
+          description: ID no encontrado
+    delete:
+      summary: Eliminar un producto por ID
+      tags:
+       - Productos
+      operationId: deleteProduct
+      responses:
+        200:
+          description: Producto eliminado
+        400:
+          description: ID no encontrado
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        internal_id:
+          type: number
+          description: Identificador interno del producto
+        title:
+          type: string
+          description: Título del producto
+        description:
+          type: string
+          description: Descripción del producto
+        price:
+          type: number
+          description: Precio del producto
+        thumbnail:
+          type: array
+          items:
+            type: string
+          description: Lista de URLs de imágenes en miniatura
+        code:
+          type: number
+          description: Código único del producto
+        stock:
+          type: number
+          description: Cantidad en stock del producto
+        category:
+          type: string
+          description: Categoría del producto
+        status:
+          type: boolean
+          default: true
+          description: Estado del producto (activo/inactivo)
+      required:
+        - internal_id
+        - title
+        - description
+        - price
+        - thumbnail
+        - code
+        - stock
+        - category
+      example:
+        title: Arandanos,
+        description: Caja de Arandanos,
+        price: 32000,
+        thumbnail: https://www.pexels.com/es-es/buscar/foto/,
+        code: 18,
+        stock: 182,
+        category: frutas,
+        status: true
+
+requestBodies:
+  addOrUpdateProduct:
+    type: object
+    properties:
+      title:
+        type: String
+        description: Nombre del producto
+      description:
+        type: String
+        description: Detalle del producto
+      price:
+        type: number
+        description: precio del producto
+      thumbnail: 
+        type: Array
+        description: enlaces de imagen del producto
+      code:
+        type: number
+        description: codigo interno, valor unico
+      stock:
+        type: number
+        description: Stock del producto
+      category:
+        type: String
+        description: Categoria del producto
+      status:
+        type: boolean
+        description: status asociado al producto
+    example:
+      title: Arandanos,
+      description: Caja de Arandanos,
+      price: 32000,
+      thumbnail: https://www.pexels.com/es-es/buscar/foto/,
+      code: 18,
+      stock: 182,
+      category: frutas,
+      status: true

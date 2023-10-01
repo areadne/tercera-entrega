@@ -6,7 +6,6 @@ import {
   getResetearClaveController,
 } from "../controllers/password.controller.js";
 
-
 const router = Router();
 
 router.post("/sendemail", sendEmailController);

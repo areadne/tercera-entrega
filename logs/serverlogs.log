@@ -6,3 +6,4 @@ error: Password must be diferent to previous {"timestamp":"2023-09-24T02:28:56.7
 error: Password must be diferent to previous {"timestamp":"2023-09-24T02:54:57.303Z"}
 error: Password must be diferent to previous {"timestamp":"2023-09-24T02:57:24.140Z"}
 error: Password must be diferent to previous {"timestamp":"2023-09-24T03:03:48.917Z"}
+fatal: addProduct could not be executed because one or more fields are missing: title, description, price, stock, code, category {"timestamp":"2023-10-01T19:56:47.878Z"}

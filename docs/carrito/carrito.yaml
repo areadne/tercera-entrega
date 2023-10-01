@@ -1,0 +1,174 @@
+paths:
+  /api/cart:
+    post:
+      summary: Crear un nuevo carrito
+      tags:
+      - Carrito
+      operationId: createCart
+      responses:
+        200:
+          description: Carrito creado
+    get:
+      summary: Obtener todos los carritos
+      tags:
+      - Carrito
+      operationId: getAllCarts
+      responses:
+        200:
+          description: OK
+  /api/cart/{cid}:
+    parameters:
+      - name: cid
+        in: path
+        required: true
+        type: integer
+        description: ID del carrito
+    get:
+      summary: Obtener un carrito por ID
+      tags:
+      - Carrito
+      operationId: getCartById
+      responses:
+        200:
+          description: OK
+        400:
+          description: ID no encontrado
+    delete:
+      summary: Eliminar un carrito por ID
+      tags:
+      - Carrito
+      operationId: deleteCart
+      responses:
+        200:
+          description: Carrito eliminado
+        400:
+          description: ID no encontrado
+    post:
+      summary: Agregar un producto al carrito
+      tags:
+      - Carrito
+      operationId: addProductInCart
+      responses:
+        200:
+          description: Producto agregado al carrito
+        400:
+          description: ID del producto o carrito indicado no existe
+    put:
+      summary: Actualizar todo el carrito
+      tags:
+      - Carrito
+      operationId: updateCart
+      responses:
+        200:
+          description: Carrito actualizado
+  /api/cart/{cid}/products/{pid}:
+    parameters:
+      - name: cid
+        in: path
+        required: true
+        type: integer
+        description: ID del carrito
+      - name: pid
+        in: path
+        required: true
+        type: integer
+        description: ID del producto
+    post:
+      summary: Agregar un producto específico al carrito
+      tags:
+      - Carrito
+      operationId: addSpecificProductInCart
+      responses:
+        200:
+          description: Producto agregado al carrito
+        400:
+          description: ID del producto o carrito indicado no existe
+    delete:
+      summary: Eliminar un producto del carrito
+      tags:
+      - Carrito
+      operationId: deleteProductInCart
+      responses:
+        200:
+          description: Producto eliminado del carrito
+        400:
+          description: ID no encontrado
+    put:
+      summary: Actualizar la cantidad de un producto en el carrito
+      tags:
+      - Carrito
+      operationId: updateProductQty
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateCart'
+      responses:
+        200:
+          description: Cantidad de producto en el carrito actualizada
+  /api/cart/carts/{cid}:
+    parameters:
+      - name: cid
+        in: path
+        required: true
+        type: integer
+        description: ID del carrito
+    get:
+      summary: Obtener todos los productos en un carrito
+      tags:
+      - Carrito
+      operationId: getAllProductsInCart
+      responses:
+        200:
+          description: OK
+  /api/cart/{cid}/purchase:
+    parameters:
+      - name: cid
+        in: path
+        required: true
+        type: integer
+        description: ID del carrito
+    get:
+      summary: Crear un ticket de compra
+      tags:
+      - Carrito
+      operationId: createPurchaseTicket
+      responses:
+        200:
+          description: Ticket de compra creado
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        id:
+          type: number
+          description: ID del carrito
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                description: ID del producto en el carrito
+              product_id:
+                type: number
+                description: ID del producto
+              quantity:
+                type: number
+                description: Cantidad del producto en el carrito
+      required:
+        - id
+
+requestBodies:
+  updateCart:
+    type: object
+    properties:
+      quantity:
+        type: number
+        description: Cantidad a actualizar en el carrito
+    example:
+      quantity: 100
