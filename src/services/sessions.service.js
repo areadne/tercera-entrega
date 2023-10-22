@@ -4,6 +4,11 @@ import sessionRepository from "../repositories/sessions.repository.js";
 import ProductDAO from "../dao/product.mongo.dao.js";
 import productRepository from "../repositories/product.repository.js";
 
+import UserDAO from "../dao/users.mongo.dao.js";
+import userRepository from "../repositories/users.repository.js";
+
+export const UserService = new userRepository(new UserDAO());
+
 import contactDTO from "../dto/contact.dto.js";
 import logger from "../helpers/logger.js";
 
@@ -19,6 +24,9 @@ export class sessionsServiceManager {
   };
 
   loginSession = async (request, response) => {
+
+    // console.log(request.session);
+
     let user = await contactDTOManager.userInformationHandler(
       request,
       response
@@ -44,6 +52,48 @@ export class sessionsServiceManager {
   };
 
   logoutSession = async (request, response) => {
+    // actualizo la hora de la ultima sesion activa del usuario
+    const userEmail = request.session.user.email;
+    let now = new Date();
+    const getUser = await UserService.getAll({ email: userEmail });
+
+    let _id;
+    let currentRole;
+    let user_name;
+    let user_lastname;
+    let user_email;
+    let user_age;
+    let user_pass;
+    let user_role;
+    let user_created_at
+
+    for (const iterator of getUser) {
+      _id = iterator._id;
+      currentRole = iterator.role;
+      user_name = iterator.first_name;
+      user_lastname = iterator.last_name;
+      user_email = iterator.email;
+      user_age = iterator.age;
+      user_pass = iterator.password;
+      user_role = iterator.role;
+      user_created_at = iterator.created_at
+
+    }
+
+    const userUpdated = {
+      first_name: user_name,
+      last_name: user_lastname,
+      email: user_email,
+      age: user_age,
+      password: user_pass,
+      role: currentRole,
+      created_at: user_created_at,
+      last_connection: now
+    };
+
+    await UserService.updateOne(_id, userUpdated);
+
+    //Elimina la sesion
     request.session.destroy((err) => {
       if (err)
         return response.json({ status: "error", message: "Ocurrio un error" });

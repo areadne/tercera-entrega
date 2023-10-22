@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   cart: { type: Number },
   role: { type: String, required: true, default: "usuario" },
+  created_at: { type: String, required: true },
+  last_connection: { type: String, required: true }
 });
 
 const userModel = mongoose.model(userCollection, userSchema);

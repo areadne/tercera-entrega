@@ -43,6 +43,8 @@ const initializePassport = () => {
   
             if (user) return done(null, user);
 
+            let now = new Date();
+
             if (user === null) {
               const newUser = await userModel.create({
                 first_name: profile._json.login,
@@ -52,6 +54,8 @@ const initializePassport = () => {
                 password: "github",
                 cart: cartId,
                 role: "usuario",
+                created_at: now,
+                last_connection: now
               });
               return done(null, newUser);
             }
@@ -100,6 +104,8 @@ const initializePassport = () => {
             let readFile = await cartModel.find();
             let cartId = readFile[readFile.length - 1].id;
 
+            let now = new Date();
+
             const newUser = await userModel.create({
               first_name,
               last_name,
@@ -108,6 +114,8 @@ const initializePassport = () => {
               password: passwordHash,
               cart: cartId,
               role: "usuario",
+              created_at: now,
+              last_connection: now
             });
 
             return done(null, newUser);

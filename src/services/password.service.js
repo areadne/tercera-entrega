@@ -48,6 +48,7 @@ export class passwordServiceManager {
     response.send("Link para recuperar clave enviado al correo");
   };
 
+
   resetearClave = async (request, response) => {
       const { email, password } = request.body;
       //se debe pasar email, password en el body

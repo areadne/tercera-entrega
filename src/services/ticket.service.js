@@ -94,7 +94,7 @@ export class ticketServiceManager {
     let amount = await this.stockHandler(request, response);
 
     if (amount === 0) {
-      logger.debug("createTicket failed because amout is 0")
+      logger.debug("createTicket failed because amount is 0")
       logger.fatal("createTicket failed because we do not have stock")
       response.send(
         "No se pudo finalizar compra ya que no contamos con stock de los productos seleccionados"
@@ -103,15 +103,8 @@ export class ticketServiceManager {
     }
 
     let purchaser = request.session.user.email;
-
-    let now = new Date();
-    let date = now.toLocaleDateString();
-    let hour = now.getHours();
-    let minutes = now.getMinutes();
-    let purchase_datetime = `${date} ${hour}:${minutes}`;
-
+    let purchase_datetime = new Date();
     let code;
-
     let readTicketCollection = await ticketService.getAll();
 
     code =
@@ -138,12 +131,14 @@ export class ticketServiceManager {
 
     if (products === undefined || products.length === 0) {
       response.render("purchasecomplete", { getTicketDetails });
+      return
     }
 
     if (products.length >= 1) {
       let user = await managerUser.sentUserData(request, response);
       user.getTicketDetails = getTicketDetails;
       response.render("purchaseincomplete", user);
+      return
     }
   };
 }

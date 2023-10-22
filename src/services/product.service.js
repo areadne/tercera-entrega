@@ -1,11 +1,16 @@
 import ProductDAO from "../dao/product.mongo.dao.js";
 import productRepository from "../repositories/product.repository.js";
+import UserDAO from "../dao/users.mongo.dao.js";
+import userRepository from "../repositories/users.repository.js";
 import CustomError from "../services/errors/custom_error.js";
 import EErrors from "../services/errors/enums.js";
 import { generateUserErrorInfo } from "../services/errors/info.js";
 import logger from "../helpers/logger.js";
+import nodemailer from "nodemailer";
+import config from "../config/config.js";
 
 export const ProductService = new productRepository(new ProductDAO());
+export const UserService = new userRepository(new UserDAO());
 
 export class ProductServiceManager {
   constructor() {}
@@ -82,6 +87,7 @@ export class ProductServiceManager {
       } = request.body;
 
       const data = request.body;
+      const owner = request.session.user.email;
 
       if (typeof status != "boolean") {
         logger.fatal(
@@ -137,6 +143,7 @@ export class ProductServiceManager {
         stock,
         category,
         status,
+        owner,
       });
 
       response.send({ status: "Successful request", payload: newItemInDB });
@@ -156,6 +163,8 @@ export class ProductServiceManager {
       category,
       status,
     } = request.body;
+
+    const owner = request.session.user.email;
 
     if (!title || !description || !price || !stock || !code || !category) {
       logger.error("At least one field is missing");
@@ -187,6 +196,7 @@ export class ProductServiceManager {
       stock,
       category,
       status,
+      owner,
     });
   };
 
@@ -225,7 +235,7 @@ export class ProductServiceManager {
     for (const document of itemFounded) {
       // console.log("Documento:", document);
       logger.info("Documento:", document);
-      const { _id } = document;
+      const { _id, owner } = document;
 
       const nuevoItem = {
         internal_id: id,
@@ -237,12 +247,13 @@ export class ProductServiceManager {
         stock: stock,
         category: category,
         status: status,
+        owner: owner,
       };
 
       await ProductService.updateOne(_id, nuevoItem);
     }
 
-    return;
+    return
   };
 
   deleteProduct = async (request, response) => {
@@ -251,6 +262,45 @@ export class ProductServiceManager {
     const readFile = await this.readProductsDB();
 
     const itemToDelete = readFile.find((item) => item.internal_id === id);
+
+    const owner = itemToDelete.owner;
+
+    const getUser = await UserService.getAll({ email: owner });
+
+    let userRole;
+
+    for (const iterator of getUser) {
+      userRole = iterator.role;
+    }
+
+    if (userRole === "premium") {
+      logger.info("item eliminado");
+
+      let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
+        auth: {
+          user: config.mailer.mailuser,
+          pass: config.mailer.password,
+        },
+      });
+
+      let message = {
+        from: "ceo@coderhouse.com",
+        to: owner,
+        subject: "Notificacion de producto eliminado",
+        html: `
+            Hola!, el producto con ID: ${itemToDelete.internal_id}, nombre: ${itemToDelete.title} ha sido eliminado
+            `,
+      };
+
+      try {
+        transporter.sendMail(message);
+      } catch (error) {
+        logger.error(error);
+      }
+    }
 
     if (itemToDelete === undefined) {
       response
