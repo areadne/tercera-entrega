@@ -18,8 +18,10 @@ import mockingRouter from "./routers/mockingproducts.router.js"
 import errorMiddleware from "./middlewares/error.middleware.js";
 import userRouter from "./routers/user.router.js"
 import loggerTest from "./routers/loggertest.router.js"
+import paymentsRouter from "./routers/payments.router.js"
 import logger from "./helpers/logger.js";
-import mailRouter from "./routers/mail.router.js"
+import passwordRouter from "./routers/password.router.js"
+import carRouter from "./routers/car.router.js"
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUiExpress from "swagger-ui-express";
 
@@ -69,20 +71,29 @@ initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/api/products", productRouter);
-app.use("/api/cart", cartRouter);
-// app.use("/products", viewRouter);
-// ruta que lleva a login
-app.use("/api/sessions", sessionsRouter);
-app.use("/home", homeRouter);
-app.use("/chat", viewsRouter);
-app.use("/mockingproducts", mockingRouter)
+// app.use("/api/cart", cartRouter);
+// // app.use("/products", viewRouter);
+// // ruta que lleva a login
+// app.use("/api/sessions", sessionsRouter);
+// app.use("/home", homeRouter);
+// app.use("/chat", viewsRouter);
+// app.use("/mockingproducts", mockingRouter)
+// app.use("/api/products", productRouter);
+
+
+
 
 app.use('/users', userRouter)
+app.use("/password", passwordRouter)
+app.use('/cars', carRouter)
+app.use('/payments', paymentsRouter)
+
+
+
+
 app.use(errorMiddleware)
 
 app.use("/loggerTest", loggerTest)
-app.use("/mail", mailRouter)
 
 await mongoose.connect(config.mongo.url_db_name);
 
@@ -90,8 +101,8 @@ const httpServer = app.listen(config.apiserver.port, () => {
   logger.info("estoy en ejecucion");
 });
 
-const io = new Server(httpServer);
 
+const io = new Server(httpServer);
 
 io.on("connection", (socket) => {
   logger.info("handshake");

@@ -5,15 +5,17 @@ const productsCollection = "products";
 
 const productsSchema = new mongoose.Schema({
   internal_id: { type: Number, unique: true, required: true},
-  title: { type: String, required: true},
-  description: { type: String, required: true},
-  price: { type: Number, required: true},
-  thumbnail: { type: Array, required: true},
-  code: { type: Number, unique: true, required: true },
-  stock: { type: Number, required: true},
-  category: { type: String, required: true},
-  status: { type: Boolean, default: true},
-  owner: { type: String, required: true }
+  car_id: { type: String, required: true},
+  brand: { type: String, required: true},
+  model: { type: String, required: true},
+  year: { type: Number, required: true},
+  status: { type: Boolean, default: false},
+  email: { type: String, required: true },
+  extra: { type: Array }
+  // email: { type: String, required: true },
+  // code: { type: Number, unique: true, required: true },
+  // stock: { type: Number, required: true},
+  // category: { type: String, required: true},
 }
 );
 

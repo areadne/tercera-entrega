@@ -1,17 +1,22 @@
 import nodemailer from "nodemailer";
 import contactDTO from "../dto/contact.dto.js";
 import logger from "../helpers/logger.js";
-import { createHash } from "../helpers/utils.js";
+import UserDAO from "../dao/users.mongo.dao.js";
+import userRepository from "../repositories/users.repository.js";
 import SessionDAO from "../dao/sessions.mongo.dao.js";
 import sessionRepository from "../repositories/sessions.repository.js";
 import config from "../config/config.js";
+import { createHash, isValidPassword } from "../helpers/utils.js";
+import userModel from "../models/user.model.js";
+
 
 export const SessionService = new sessionRepository(new SessionDAO());
+export const UserService = new userRepository(new UserDAO());
 
 export const contactDTOManager = new contactDTO();
 
 export class passwordServiceManager {
-  constructor() {}
+  constructor() { }
 
   sendEmail = async (request, response) => {
     const { email } = request.body;
@@ -28,13 +33,13 @@ export class passwordServiceManager {
     });
 
     let message = {
-      from: "ceo@coderhouse.com",
+      from: "test@lycans.com",
       to: email,
-      subject: "Reestablecer contrase*a",
+      subject: "Reestablecer clave",
       html: `
-      Solicitud de reestablecer contrase*a generado exitosamente, 
+      Solicitud de reestablecer clave generado exitosamente, 
       haz clic en el siguiente boton para ejecutar el cambio
-      <form action="http://localhost:8080/mail/resetearclave">
+      <form action="http://localhost:8080/password/resetearclave">
       <button type="submit">Cambiar clave</button>
       </form>
       `,
@@ -45,58 +50,62 @@ export class passwordServiceManager {
     } catch (error) {
       logger.error(error);
     }
-    response.send("Link para recuperar clave enviado al correo");
+    response.send({ "status": "success", payload: "Link para recuperar clave enviado al correo del usuario" });
   };
 
 
   resetearClave = async (request, response) => {
-      const { email, password } = request.body;
-      //se debe pasar email, password en el body
-      let user = await contactDTOManager.userInformationHandler(request, response);
-    
-      if (user.email === undefined) {
-        logger.error("Email does not exits");
-        logger.debug("Can not continue because Email does not exits on data base");
-        response.status(400).json({
-            message: "Email does not exits",
-          });
-        return;
-      }
-    
-      if (user.password === true) {
-        logger.error("Password must be diferent to previous");
-        logger.debug(
-          "Password indicated by user is the same that already exits on data base"
-        );
-        response.status(400).json({
-          message: "La contrase*a debe ser distinta a la actual",
-        });
-        return;
-      }
-    
-      let readFileToUpdate = await SessionService.getAll();
-    
-      const itemFounded = readFileToUpdate.filter((item) => item.email === email);
-      const passwordHash = createHash(password);
-    
-      for (const document of itemFounded) {
-        logger.info("Documento:", document);
-        const { _id, first_name, last_name, age, cartId, role } = document;
-    
-        const userUpdated = {
-          first_name: first_name,
-          last_name: last_name,
-          email: email,
-          age: age,
-          password: passwordHash,
-          cart: cartId,
-          role: role,
-        };
-    
-        await SessionService.updateOne(_id, userUpdated);
-      }
-      
-      response.send('contrase*a actualizada exitosamente')
+
+    const { email, password } = request.body;
+
+    let userDBInfo = await userModel.findOne({ email: email });
+
+    if (userDBInfo === null || undefined) {
+      response.status(400).json({
+        message: "Email does not exits",
+      });
+      return;
+    }
+
+    const passwordValidation = isValidPassword(password, userDBInfo.password)
+
+    if (passwordValidation) {
+      response.status(400).json(
+        { "status": "something went wrong", payload: "new password must be diferent to current password" }
+      );
+      return;
+    }
+
+    let readFileToUpdate = await UserService.getAll();
+    const itemFounded = readFileToUpdate.filter((item) => item.email === email);
+
+    console.log(itemFounded)
+
+    const passwordHash = createHash(password);
+    let now = new Date();
+
+    for (const document of itemFounded) {
+      logger.info("Documento:", document);
+      const { _id, first_name, last_name, email, identification, password, role, created_at, last_connection } = document;
+      console.log(_id)
+
+      const userUpdated = {
+        first_name: first_name,
+        last_name: last_name,
+        email: email,
+        identification: identification,
+        password: passwordHash,
+        role: role,
+        created_at: created_at,
+        last_connection: now
+      };
+
+      console.log(userUpdated)
+
+      await SessionService.updateOne(_id, userUpdated);
+    }
+
+    response.send({status: "success", payload: "Update completed"})
   }
 
 

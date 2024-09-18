@@ -9,11 +9,3 @@ export const sendEmailController = async (request, response) => {
 export const resetearClaveController = async (request, response) => {
   serviceManager.resetearClave(request, response);
 };
-
-export const cambioClaveController = async (request, response) => {
-  response.render("cambiarpassword");
-};
-
-export const getResetearClaveController = async(request, response) => {
-    response.render("nuevapassword")
-}

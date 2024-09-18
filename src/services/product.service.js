@@ -13,7 +13,7 @@ export const ProductService = new productRepository(new ProductDAO());
 export const UserService = new userRepository(new UserDAO());
 
 export class ProductServiceManager {
-  constructor() {}
+  constructor() { }
 
   validateData = (argumentToValidate, stringToShow) => {
     if (argumentToValidate) {
@@ -74,83 +74,171 @@ export class ProductServiceManager {
   };
 
   addProduct = async (request, response, next) => {
-    try {
-      const {
-        title,
-        description,
-        price,
-        thumbnail,
-        code,
-        stock,
-        category,
-        status,
-      } = request.body;
+    // try {
+    const {
+      car_id,
+      brand,
+      model,
+      year,
+      status,
+      email,
+      extra,
+    } = request.body;
 
-      const data = request.body;
-      const owner = request.session.user.email;
+    const data = request.body;
 
-      if (typeof status != "boolean") {
-        logger.fatal(
-          "addProduct could not be executed because status is not a boolean"
-        );
-        CustomError.createError({
-          name: "Creation error",
-          cause: "Status must be a boolean",
-          message: "Error creating the product",
-          code: EErrors.INVALID_TYPES_ERROR,
-        });
-      }
+    console.log(data)
 
-      if (!title || !description || !price || !stock || !code || !category) {
-        logger.fatal(
-          "addProduct could not be executed because one or more fields are missing: title, description, price, stock, code, category"
-        );
-        CustomError.createError({
-          name: "Creation error",
-          cause: generateUserErrorInfo(data),
-          message: "Error creating the product",
-          code: EErrors.INVALID_TYPES_ERROR,
-        });
-      }
 
-      let readFile = await this.readProductsDB();
+    // if (typeof status != "boolean") {
+    //   logger.fatal(
+    //     "addProduct could not be executed because status is not a boolean"
+    //   );
+    //   CustomError.createError({
+    //     name: "Creation error",
+    //     cause: "Status must be a boolean",
+    //     message: "Error creating the product",
+    //     code: EErrors.INVALID_TYPES_ERROR,
+    //   });
+    // }
 
-      const validateCode = readFile.find((el) => el.code === code);
-
-      if (validateCode) {
-        logger.warning(
-          "addProduct could not be executed because validateCode already exits"
-        );
-        response.status(400).send("Code indicated already exits");
-        return;
-      }
-
-      let internal_id;
-
-      internal_id =
-        readFile.length === 0
-          ? 1
-          : readFile[readFile.length - 1].internal_id + 1;
-      logger.info(internal_id);
-
-      let newItemInDB = await ProductService.create({
-        internal_id,
-        title,
-        description,
-        price,
-        thumbnail,
-        code,
-        stock,
-        category,
-        status,
-        owner,
+    if (!car_id || !brand || !model || !year || !email) {
+      logger.fatal(
+        "addProduct could not be executed because one or more fields are missing: car_id, brand, model, year, email"
+      );
+      CustomError.createError({
+        name: "Creation error",
+        cause: generateUserErrorInfo(data),
+        message: "Error creating the product",
+        code: EErrors.INVALID_TYPES_ERROR,
       });
-
-      response.send({ status: "Successful request", payload: newItemInDB });
-    } catch (error) {
-      next(error);
     }
+
+
+    let readFile = await this.readProductsDB();
+    let internal_id;
+
+    const validateCode = readFile.find((el) => el.internal_id === internal_id);
+    // console.log(validateCode)
+
+
+    internal_id =
+      readFile.length === 0
+        ? 1
+        : readFile[readFile.length - 1].internal_id + 1;
+    logger.info(internal_id);
+
+    console.log(internal_id)
+
+    let newItemInDB = await ProductService.create({
+            internal_id,
+            car_id,
+            brand,
+            model,
+            year,
+            status,
+            email,
+            extra,
+          });
+
+
+    // console.log(validateCode)
+
+    // if (validateCode === undefined) {
+    //   logger.warning(
+    //     "addProduct could not be executed because car_id already exits"
+    //   );
+    //   response.status(400).send("car_id indicated already exits");
+    //   return;
+    // }
+
+    // let newCarInDB = await ProductService.create(data);
+
+    response.send({ status: "Successful request", payload: newItemInDB });
+
+    // } catch (error) {
+    //   // next(error);
+    // }
   };
+
+  // addProduct = async (request, response, next) => {
+  //   try {
+  //     const {
+  //       title,
+  //       description,
+  //       price,
+  //       thumbnail,
+  //       code,
+  //       stock,
+  //       category,
+  //       status,
+  //     } = request.body;
+
+  //     const data = request.body;
+  //     const owner = request.session.user.email;
+
+  //     if (typeof status != "boolean") {
+  //       logger.fatal(
+  //         "addProduct could not be executed because status is not a boolean"
+  //       );
+  //       CustomError.createError({
+  //         name: "Creation error",
+  //         cause: "Status must be a boolean",
+  //         message: "Error creating the product",
+  //         code: EErrors.INVALID_TYPES_ERROR,
+  //       });
+  //     }
+
+  //     if (!title || !description || !price || !stock || !code || !category) {
+  //       logger.fatal(
+  //         "addProduct could not be executed because one or more fields are missing: title, description, price, stock, code, category"
+  //       );
+  //       CustomError.createError({
+  //         name: "Creation error",
+  //         cause: generateUserErrorInfo(data),
+  //         message: "Error creating the product",
+  //         code: EErrors.INVALID_TYPES_ERROR,
+  //       });
+  //     }
+
+  //     let readFile = await this.readProductsDB();
+
+  //     const validateCode = readFile.find((el) => el.code === code);
+
+  //     if (validateCode) {
+  //       logger.warning(
+  //         "addProduct could not be executed because validateCode already exits"
+  //       );
+  //       response.status(400).send("Code indicated already exits");
+  //       return;
+  //     }
+
+  //     let internal_id;
+
+  //     internal_id =
+  //       readFile.length === 0
+  //         ? 1
+  //         : readFile[readFile.length - 1].internal_id + 1;
+  //     logger.info(internal_id);
+
+  //     let newItemInDB = await ProductService.create({
+  //       internal_id,
+  //       title,
+  //       description,
+  //       price,
+  //       thumbnail,
+  //       code,
+  //       stock,
+  //       category,
+  //       status,
+  //       owner,
+  //     });
+
+  //     response.send({ status: "Successful request", payload: newItemInDB });
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // };
 
   addProductFromSocket = async (request, response) => {
     const {

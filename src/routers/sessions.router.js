@@ -19,7 +19,9 @@ router.get("/registro", registryController);
 router.post("/registro", passport.authenticate("register", {failureRedirect: "/api/sessions/failRegister",}), registerController);
 router.get("/failRegister", failRegisterController);
 router.get("/login", loginController);
+
 router.post("/login", loginSessionController);
+
 router.post("/logout", logoutSessionController);
 //esta muestra la vista de productos
 router.get("/view", loginHandlerController);

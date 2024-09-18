@@ -16,3 +16,15 @@ error: LoginSession failed because email is not correct {"timestamp":"2023-10-22
 error: LoginSession failed because email is not correct {"timestamp":"2023-10-22T15:05:59.534Z"}
 fatal: addProduct could not be executed because status is not a boolean {"timestamp":"2023-10-22T16:01:58.502Z"}
 fatal: createTicket failed because we do not have stock {"timestamp":"2023-10-22T16:44:22.386Z"}
+error: LoginSession failed because email is not correct {"timestamp":"2024-09-08T00:49:25.498Z"}
+error: Password must be diferent to previous {"timestamp":"2024-09-09T02:29:05.524Z"}
+error: Password must be diferent to previous {"timestamp":"2024-09-09T02:33:42.644Z"}
+error: Email does not exits {"timestamp":"2024-09-09T02:38:27.059Z"}
+error: Email does not exits {"timestamp":"2024-09-09T02:38:39.714Z"}
+error: Email does not exits {"timestamp":"2024-09-09T02:38:52.435Z"}
+error: Email does not exits {"timestamp":"2024-09-09T02:40:51.608Z"}
+error: Email does not exits {"timestamp":"2024-09-09T02:41:13.257Z"}
+error: Email does not exits {"timestamp":"2024-09-09T02:41:25.282Z"}
+error: Password must be diferent to previous {"timestamp":"2024-09-09T02:41:35.653Z"}
+fatal: addProduct could not be executed because status is not a boolean {"timestamp":"2024-09-09T23:14:58.598Z"}
+fatal: addProduct could not be executed because status is not a boolean {"timestamp":"2024-09-09T23:17:51.324Z"}

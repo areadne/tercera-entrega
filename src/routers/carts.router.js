@@ -1,5 +1,5 @@
 import { Router, query } from "express";
-import "/Users/luis_/OneDrive/Documents/Areadne/Backend/Primera-pre-entrega/src/data/cart.json" assert { type: "json" };
+// import "/Users/luis_/OneDrive/Documents/Areadne/Backend/Primera-pre-entrega/src/data/cart.json" assert { type: "json" };
 import {
   createCartController,
   getProductByIdController,

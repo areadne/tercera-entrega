@@ -1,14 +1,21 @@
 import { Router } from "express";
-import { changeUserController, getUsersController, deleteUser } from "../controllers/users.controller.js";
+import { validateTokenController, loginTokenController, createUserController, getUserController, getUserByIdController, changeUserController, deleteUser } from "../controllers/users.controller.js";
+import { authenticateToken } from "../middlewares/jwtvalidate.middleware.js"
 
 const users = []
 
 const router = Router()
 
-router.post('/premium/:uid', changeUserController)
+router.post('/create', createUserController)
 
-router.get('/', getUsersController)
+router.post('/login', loginTokenController)
 
-router.delete('/', deleteUser)
+router.get('/', getUserController)
+
+router.get('/:email', getUserByIdController)
+
+router.get('/validatetoken', authenticateToken, validateTokenController)
+
+router.delete('/', authenticateToken, deleteUser)
 
 export default router
